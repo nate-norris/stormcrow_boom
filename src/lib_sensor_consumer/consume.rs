@@ -23,7 +23,6 @@ pub async fn sensor_consume_task<F, Fut>(mut rx: EventRx, mut on_trigger: F)
                     EdgeDetection::Error(_msg) => {
                         eprintln!("Sensor error")
                     }
-                    _ => {}
                 }
             }
 
