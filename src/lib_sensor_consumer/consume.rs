@@ -18,6 +18,7 @@ pub async fn sensor_consume_task<F, Fut>(mut rx: EventRx, mut on_trigger: F)
             Some(event) = rx.recv() => {
                 match event {
                     EdgeDetection::Triggered => {
+                        println!("trigger received");
                         timer = Some(Box::pin(sleep(wait)));
                     }
                     EdgeDetection::Error(_msg) => {
@@ -29,10 +30,15 @@ pub async fn sensor_consume_task<F, Fut>(mut rx: EventRx, mut on_trigger: F)
             // verify timer completes a run then complete trigger action
             _ = async {
                 match &mut timer {
-                    Some(t) => t.as_mut().await,
+                    // println!("timer reset");
+                    Some(t) => {
+                        println!("timer reinitialized");
+                        t.as_mut().await;
+                    },
                     None => std::future::pending::<()>().await,
                 }
             } => {
+                println!("timer finalized after 1 sec");
                 on_trigger().await;
                 timer = None;
             }
