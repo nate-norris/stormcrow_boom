@@ -1,46 +1,23 @@
-fn main() {
-    println!("Hello, world knucklehead!");
+use tokio::sync::mpsc;
+
+mod lib_sensor;
+mod lib_sensor_consumer;
+use lib_sensor::{EventTx, SoundSensor, SoundSensorMock, SoundSensorT};
+use lib_sensor_consumer::EventRx;
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // tx and rx with buffer of 32 messages
+    let (tx, _rx): (EventTx, EventRx) = mpsc::channel(32);
+
+    let sensor = SoundSensor;
+    let _sensor = SoundSensorMock;
+    tokio::spawn(async move {
+        if let Err(e) = sensor.detect_edge_task(tx.clone()).await {
+            eprintln!("Sensor failed: {:?}", e);
+        }
+    });
+
+    // consume_sensor_events(rx).await;
+    Ok(())
 }
-
-
-/*
-
-5. Run the App Automatically on Startup
-
-For a command-line app, the simplest method is a systemd service.
-
-Create a service file:
-
-sudo nano /etc/systemd/system/rust_pi_timer.service
-
-
-Paste:
-
-[Unit]
-Description=Rust Pi Timer App
-After=network.target
-
-[Service]
-ExecStart=/home/pi/rust_pi_timer/target/release/rust_pi_timer
-WorkingDirectory=/home/pi/rust_pi_timer
-Restart=always
-User=pi
-
-[Install]
-WantedBy=multi-user.target
-
-
-Enable and start it:
-
-sudo systemctl daemon-reload
-sudo systemctl enable rust_pi_timer.service
-sudo systemctl start rust_pi_timer.service
-
-
-Check status/logs:
-
-sudo systemctl status rust_pi_timer.service
-journalctl -u rust_pi_timer.service -f
-
-
-*/
