@@ -47,8 +47,7 @@ async fn main() -> anyhow::Result<()> {
             let _ = mic_tx3.send(MicNotification::Boom).await;
 
             // send radio packet and handle 
-            if let Err(e) = send_radio_packet().await {
-                // let _ = error_tx.send(SerialError::Radio).await;
+            if let Err(_e) = send_radio_packet().await {
                 let _ = mic_tx3.send(MicNotification::RadioError).await;
             }
         }
