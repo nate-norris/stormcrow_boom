@@ -5,5 +5,7 @@ pub mod trait_sensor;
 
 pub use trait_sensor::SoundSensorT;
 pub use models::{EventTx, EdgeDetection};
-pub use sound_sensor::SoundSensor;
 pub use sound_sensor_mock::SoundSensorMock;
+
+#[allow(unused_imports)]
+pub use sound_sensor::SoundSensor;
