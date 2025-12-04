@@ -5,7 +5,7 @@ mod lib_sensor;
 mod lib_sensor_consumer;
 mod mm2t;
 mod mic;
-use lib_sensor::{EventTx, SoundSensorMock, SoundSensorT};
+use lib_sensor::{EventTx, SoundSensor, SoundSensorMock, SoundSensorT};
 use lib_sensor_consumer::{EventRx, sensor_consume_task};
 use mm2t::MM2THandle;
 use mic::{MicTx, MicRx, MicNotification, mic_consume_task};
@@ -68,6 +68,7 @@ fn spawn_edge_detector(tx: EventTx, mic_tx: MicTx) {
     // sensor for sound trigger
     // let sensor = SoundSensorMock; //mock sensor for testing
     let sensor = SoundSensorMock;
+    let _sensor = SoundSensor;
 
     // spawn sound sensor thread for triggering edge detects
     tokio::spawn(async move {

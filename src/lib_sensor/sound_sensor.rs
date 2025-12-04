@@ -18,7 +18,6 @@ baud rate checks
 460800
 921600 (rare, mostly for high-throughput devices)
 */
-#[allow(dead_code)]
 pub struct SoundSensor;
 impl SoundSensorT for SoundSensor {
     fn detect_edge_task(&self, tx: EventTx) -> 
