@@ -7,7 +7,7 @@ mod mm2t;
 mod mic;
 use lib_sensor::{EventTx, SoundSensor, SoundSensorMock, SoundSensorT};
 use lib_sensor_consumer::{EventRx, sensor_consume_task};
-use mm2t::MM2THandle;
+use mm2t::MM2TBoomHandle;
 use mic::{MicTx, MicRx, MicNotification, mic_consume_task};
 
 #[tokio::main]
@@ -23,7 +23,7 @@ async fn main() -> anyhow::Result<()> {
     // serial radio packets
     //  NOTE: failed init here is a failed program and will 
     //  notify through MicNotification
-    let radio: Arc<MM2THandle> = init_radio(&mic_tx).await.unwrap();
+    let radio: Arc<MM2TBoomHandle> = init_radio(&mic_tx).await.unwrap();
 
     // wait for sound sensor edge detection
     spawn_edge_detector(tx.clone(), mic_tx.clone());
@@ -52,10 +52,10 @@ fn init_mic() -> MicTx {
     mic_tx
 }
 
-async fn init_radio(mic_tx: &MicTx) ->anyhow::Result< Arc<MM2THandle>> {
+async fn init_radio(mic_tx: &MicTx) ->anyhow::Result< Arc<MM2TBoomHandle>> {
     // initialize mm2t radio
     //      sends mic notification error if failed to start
-    match MM2THandle::start().await {
+    match MM2TBoomHandle::start().await {
         Ok(r) => Ok(Arc::new(r)), // assign to radio
         Err(e) => {
             let _ = mic_tx.send(MicNotification::RadioError).await;
@@ -80,12 +80,12 @@ fn spawn_edge_detector(tx: EventTx, mic_tx: MicTx) {
     });
 }
 
-fn spawn_sensor_consumer(rx: EventRx, radio: Arc<MM2THandle>, mic_tx: MicTx) {
+fn spawn_sensor_consumer(rx: EventRx, radio: Arc<MM2TBoomHandle>, mic_tx: MicTx) {
     // Spawn background task for consuming sensor events
     tokio::spawn(async move {
         sensor_consume_task(rx, move || {
             let mic_tx = mic_tx.clone();       // clone per callback invocation
-            let radio = Arc::clone(&radio);    // clone Arc per callback invocation
+            let radio: Arc<MM2TBoomHandle> = Arc::clone(&radio);    // clone Arc per callback invocation
             async move {
                 // Notify mic of shot success
                 let _ = mic_tx.send(MicNotification::Boom).await;
