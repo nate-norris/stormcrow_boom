@@ -44,7 +44,7 @@ impl Microphone {
     fn new() -> anyhow::Result<Self> {
         //define parameters for opening serial port
         let port_builder = tokio_serial::new(
-            "/dev/ttyUSB2", 115_200);
+            "/dev/ttyUSB1", 115_200);
         let port = port_builder.open_native_async()?;
         Ok(Self { 
             port: Arc::new(Mutex::new(port)),
