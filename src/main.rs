@@ -3,12 +3,12 @@ use std::sync::Arc;
 
 mod lib_sensor;
 mod lib_sensor_consumer;
+mod lib_mic;
 mod mm2t;
-mod mic;
 use lib_sensor::{EventTx, SoundSensor, SoundSensorMock, SoundSensorT};
 use lib_sensor_consumer::{EventRx, sensor_consume_task};
+use lib_mic::{MicTx, MicRx, MicNotification, mic_consume_task};
 use mm2t::MM2TBoomHandle;
-use mic::{MicTx, MicRx, MicNotification, mic_consume_task};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
