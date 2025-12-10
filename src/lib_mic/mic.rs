@@ -5,15 +5,16 @@ use tokio::io::AsyncWriteExt;
 use tokio_serial::{SerialStream, SerialPortBuilderExt};
 use tokio::time::sleep;
 
+use super::trait_mic::MicrophoneT;
 use super::models::ERROR_START;
 
 #[allow(dead_code)]
 pub(crate) struct Microphone {
     port: Arc<Mutex<SerialStream>>,
 }
-impl Microphone {
+impl MicrophoneT for Microphone {
     #[allow(dead_code)]
-    pub(crate) fn new() -> anyhow::Result<Self> {
+    fn new() -> anyhow::Result<Self> {
         //define parameters for opening serial port
         let port_builder = tokio_serial::new(
             "/dev/ttyUSB1", 115_200);
@@ -24,7 +25,7 @@ impl Microphone {
     }
 
     #[allow(dead_code)]
-    pub(crate) async fn boom_pattern(&self) -> anyhow::Result<()> {
+    async fn boom_pattern(&self) -> anyhow::Result<()> {
         let mut port = self.port.lock().await;
 
         port.write_all(b"1").await?;
@@ -34,7 +35,7 @@ impl Microphone {
     }
 
     #[allow(dead_code)]
-    pub(crate) fn spawn_error_pattern(&self) {
+    fn spawn_error_pattern(&self) {
         let port = self.port.clone();
 
         ERROR_START.call_once(|| {

@@ -1,5 +1,6 @@
 use super::models::{MicRx, MicNotification};
 use super::mic_mock::MicrophoneMock;
+use super::trait_mic::MicrophoneT;
 
 pub async fn mic_consume_task(mut rx: MicRx) {
     let mut error_triggered: bool = false;
