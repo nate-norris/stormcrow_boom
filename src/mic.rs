@@ -51,6 +51,7 @@ impl Microphone {
         })
     }
 
+    #[allow(dead_code)]
     async fn boom_pattern(&self) -> anyhow::Result<()> {
         let mut port = self.port.lock().await;
 
@@ -60,6 +61,7 @@ impl Microphone {
         Ok(())
     }
 
+    #[allow(dead_code)]
     fn spawn_error_pattern(&self) {
         let port = self.port.clone();
 
@@ -88,11 +90,13 @@ impl MicrophoneMoc {
         Ok(Self {})
     }
 
+    #[allow(dead_code)]
     async fn boom_pattern(&self) -> anyhow::Result<()> {
         println!("mic: boom pattern");
         Ok(())
     }
 
+    #[allow(dead_code)]
     fn spawn_error_pattern(&self) {
         ERROR_START.call_once(|| {
             tokio::spawn(async move {
