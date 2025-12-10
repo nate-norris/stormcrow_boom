@@ -36,7 +36,7 @@ pub async fn mic_consume_task(mut rx: MicRx) {
 
 }
 
-#[allow(dead_code)
+#[allow(dead_code)]
 struct Microphone {
     port: Arc<Mutex<SerialStream>>,
 }
@@ -79,7 +79,7 @@ impl Microphone {
     }
 }
 
-#[allow(dead_code)
+#[allow(dead_code)]
 struct MicrophoneMoc {}
 
 impl MicrophoneMoc {
