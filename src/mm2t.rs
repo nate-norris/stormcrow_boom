@@ -47,6 +47,7 @@ impl MM2TBoomHandle {
         let mut port = self.port.lock().await;
         port.write_all(&Self::PACKET).await?;
         port.flush().await?;
+        println!("mm2t: sent packet {:?}", &Self::PACKET);
         Ok(())
     }
 
