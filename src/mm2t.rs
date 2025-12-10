@@ -27,7 +27,7 @@ impl MM2TBoomHandle {
 
     pub async fn start() -> anyhow::Result<Self> {
         //define parameters for opening serial port
-        let port_builder = tokio_serial::new("/dev/ttyUSB1", 38_400)
+        let port_builder = tokio_serial::new("/dev/ttyUSB0", 38_400)
             .data_bits(DataBits::Eight)
             .parity(Parity::None)
             .stop_bits(StopBits::One)
