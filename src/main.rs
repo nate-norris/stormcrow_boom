@@ -31,17 +31,19 @@ async fn main() -> anyhow::Result<()> {
                 let _ = mic_tx_init_radio.send(MicNotification::RadioError).await;
             });
             None
-            // panic!("Radio failed to initialize");
         }
     };
-
-    // wait for sound sensor edge detection
-    spawn_edge_detector(tx.clone(), mic_tx.clone());
 
     // consume rx of sound sensor edge detection
     //      sends radio packet
     //      handles MicNotifications for errors and triggers
     if let Some(r) = radio {
+        // initiate EventTx for sound sensor
+        spawn_edge_detector(tx.clone(), mic_tx.clone());
+
+        // initiate listening for EventRx for sound sensor
+        //      sends radio packet
+        //      handles MicNotifications
         spawn_sensor_consumer(rx, r, mic_tx.clone());
     }
 
