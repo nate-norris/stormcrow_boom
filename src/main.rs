@@ -58,6 +58,7 @@ async fn init_radio(mic_tx: &MicTx) ->anyhow::Result< Arc<MM2TBoomHandle>> {
     match MM2TBoomHandle::start().await {
         Ok(r) => Ok(Arc::new(r)), // assign to radio
         Err(e) => {
+            println!("radio: init error should send mic");
             let _ = mic_tx.send(MicNotification::RadioError).await;
             Err(e.into())
         }
