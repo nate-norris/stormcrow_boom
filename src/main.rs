@@ -23,7 +23,25 @@ async fn main() -> anyhow::Result<()> {
     // serial radio packets
     //  NOTE: failed init here is a failed program and will 
     //  notify through MicNotification
-    let radio: Arc<MM2TBoomHandle> = init_radio(&mic_tx).await.unwrap();
+    // let radio: Arc<MM2TBoomHandle> = init_radio(&mic_tx).await.unwrap();
+
+    let radio = match init_radio(&mic_tx).await {
+        Ok(r) => r,
+        Err(_e) => {
+            let mic_tx_init_radio = mic_tx.clone();
+            tokio::spawn(async move {
+                let _ = mic_tx_init_radio.send(MicNotification::RadioError).await;
+            });
+            return Ok(());
+            // panic!("Radio failed to initialize");
+        }
+    };
+
+    // if let Err(_e) = init_radio(&mic_tx).await {
+    //     tokio::spawn(async move {
+    //         let _ = &mic_tx.send(MicNotification::RadioError).await;
+    //     });
+    // };
 
     // wait for sound sensor edge detection
     spawn_edge_detector(tx.clone(), mic_tx.clone());
