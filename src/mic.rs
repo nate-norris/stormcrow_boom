@@ -17,7 +17,8 @@ static ERROR_START: std::sync::Once = std::sync::Once::new();
 
 pub async fn mic_consume_task(mut rx: MicRx) {
     let mut error_triggered: bool = false;
-    let microphone = Microphone::new().unwrap();
+    let microphone = MicrophoneMoc::new().unwrap();
+    let _microphone = Microphone::new().unwrap();
 
     while let Some(event) = rx.recv().await {
         match event {
@@ -35,7 +36,7 @@ pub async fn mic_consume_task(mut rx: MicRx) {
 
 }
 
-
+#[allow(dead_code)
 struct Microphone {
     port: Arc<Mutex<SerialStream>>,
 }
@@ -75,5 +76,33 @@ impl Microphone {
                 }
             });
         });
+    }
+}
+
+#[allow(dead_code)
+struct MicrophoneMoc {}
+
+impl MicrophoneMoc {
+    fn new() -> anyhow::Result<Self> {
+        println!("mic: new");
+        Ok(Self {})
+    }
+
+    async fn boom_pattern(&self) -> anyhow::Result<()> {
+        println!("mic: boom pattern");
+        Ok(())
+    }
+
+    fn spawn_error_pattern(&self) {
+        ERROR_START.call_once(|| {
+            tokio::spawn(async move {
+                loop {
+                    println!("mic: error pattern output");
+                    sleep(std::time::Duration::from_secs(1)).await;
+                }
+            });
+        });
+
+
     }
 }
