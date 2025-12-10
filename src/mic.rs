@@ -18,7 +18,6 @@ static ERROR_START: std::sync::Once = std::sync::Once::new();
 pub async fn mic_consume_task(mut rx: MicRx) {
     let mut error_triggered: bool = false;
     let microphone = MicrophoneMoc::new().unwrap();
-    let _microphone = Microphone::new().unwrap();
 
     while let Some(event) = rx.recv().await {
         match event {
@@ -41,6 +40,7 @@ struct Microphone {
     port: Arc<Mutex<SerialStream>>,
 }
 impl Microphone {
+    #[allow(dead_code)]
     fn new() -> anyhow::Result<Self> {
         //define parameters for opening serial port
         let port_builder = tokio_serial::new(
