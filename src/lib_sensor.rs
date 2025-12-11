@@ -16,7 +16,7 @@
 //! and development. The SoundSensor sends tx channel event triggers when 
 //! bytes are received from hardware.
 //!
-//! ## Example
+//! ## Usage
 //!
 //! ```no_run
 //! use tokio::sync::mpsc;

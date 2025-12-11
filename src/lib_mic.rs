@@ -15,7 +15,7 @@
 //! and development. The consumer task listens for events and triggers
 //! one-shot "boom" patterns or repeating error patterns as appropriate.
 //!
-//! ## Example
+//! ## Usage
 //!
 //! ```no_run
 //! use tokio::sync::mpsc;
