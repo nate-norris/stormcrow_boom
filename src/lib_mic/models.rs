@@ -5,8 +5,8 @@ use tokio::sync::mpsc;
 pub enum MicNotification {
     Boom, // sound sensor has detected an event
     // both SoundSensorError and Radio error trigger program failure
-    SoundSensorError, // indicates physical sound sensor has an error
-    RadioError, // indicates mm25 radio has an error
+    SoundSensorError, // mic notification for sound sensor hardware issues
+    RadioError, // mic notification for radio hardware issues
 }
 
 // mpsc channels for MicNotification types
