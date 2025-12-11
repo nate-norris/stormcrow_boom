@@ -11,7 +11,7 @@ use super::models::EventTx; // use crate::models::EventTx;
 /// When an edge is detected, the task should send an appropriate notification
 /// through the provided [`EventTx`] channel.
 pub trait SoundSensorT {
-     /// Creates a future that continuously detects edge transitions and
+    /// Creates a future that continuously detects edge transitions and
     /// publishes resulting events to the provided event channel.
     ///
     /// # Arguments
