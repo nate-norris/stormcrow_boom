@@ -1,4 +1,7 @@
 /// Trait defining microphone behavior for real or mocked implementations.
+/// 
+/// To be used by Rx events to notify for sound sensor edge detection
+/// or errors in hardware.
 pub(crate) trait MicrophoneT {
     /// Initializes a new microphone instance.
     ///
