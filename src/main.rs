@@ -1,3 +1,14 @@
+//! Boom Detection Application Entry Point
+//!
+//! This binary initializes the sound sensor, microphone notification handler,
+//! and the MM2T radio interface. Tasks are spawned for:
+//! - reading sound sensor edges,
+//! - processing sensor events,
+//! - sending radio trigger packets,
+//! - notifying a microphone device of system events.
+//!
+//! The application runs until the user presses Ctrl+C.
+
 use tokio::sync::mpsc;
 use std::sync::Arc;
 
@@ -53,7 +64,8 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-
+// Initialize the mic channels and notification task.
+// Begins consuming Rx channel and returns Tx channel
 fn init_mic() -> MicTx {
 
     // mic channels for MicNotification events
@@ -67,6 +79,8 @@ fn init_mic() -> MicTx {
     mic_tx
 }
 
+// Initializes MM2T radio
+// On failure begins a MicNotification::RadioError
 async fn init_radio(mic_tx: &MicTx) ->anyhow::Result< Arc<MM2TBoomHandle>> {
     // initialize mm2t radio
     //      sends mic notification error if failed to start
@@ -80,9 +94,9 @@ async fn init_radio(mic_tx: &MicTx) ->anyhow::Result< Arc<MM2TBoomHandle>> {
     }
 }
 
+// Spawn background task reading sound sensor edges
 fn spawn_edge_detector(tx: EventTx, mic_tx: MicTx) {
     // sensor for sound trigger
-    // let sensor = SoundSensorMock; //mock sensor for testing
     let sensor = SoundSensorMock;
     let _sensor = SoundSensor;
 
@@ -96,6 +110,8 @@ fn spawn_edge_detector(tx: EventTx, mic_tx: MicTx) {
     });
 }
 
+// spawn background task that consumes EventRx events
+// Sends mic notifications and radio packets
 fn spawn_sensor_consumer(rx: EventRx, radio: Arc<MM2TBoomHandle>, mic_tx: MicTx) {
     // Spawn background task for consuming sensor events
     tokio::spawn(async move {
