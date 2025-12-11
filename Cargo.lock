@@ -39,16 +39,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
-name = "chinook_boom_tauri"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "fastrand",
- "tokio",
- "tokio-serial",
-]
-
-[[package]]
 name = "core-foundation"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -369,6 +359,16 @@ checksum = "17129e116933cf371d018bb80ae557e889637989d8638274fb25622827b03881"
 dependencies = [
  "libc",
  "windows-sys 0.60.2",
+]
+
+[[package]]
+name = "stormcrow_boom"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "fastrand",
+ "tokio",
+ "tokio-serial",
 ]
 
 [[package]]
