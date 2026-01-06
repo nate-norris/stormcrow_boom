@@ -24,6 +24,7 @@ pub fn init_logger() {
         if !log_path.exists() {
             fs::File::create(&log_path).unwrap();
         }
+        println!("{:?}", log_path);
 
         // Use rolling appender with no rotation
         let file_appender: RollingFileAppender = RollingFileAppender::new(Rotation::NEVER, exe_dir, "log.txt");
