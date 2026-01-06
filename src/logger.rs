@@ -20,10 +20,12 @@ pub fn init_logger() {
             .unwrap_or_else(|| env::current_dir().unwrap());
 
         // Ensure log file exists
+        println!("{:?}", exe_dir);
         let log_path = exe_dir.join("log.txt");
         if !log_path.exists() {
             fs::File::create(&log_path).unwrap();
         }
+        println!("{:?}", log_path);
 
         // Use rolling appender with no rotation
         let file_appender: RollingFileAppender = RollingFileAppender::new(Rotation::NEVER, exe_dir, "log.txt");
@@ -46,5 +48,5 @@ pub fn info(message: &str) {
 }
 
 pub fn error(message: &str) {
-    tracing::info!("{}", message);
+    tracing::error!("{}", message);
 }
