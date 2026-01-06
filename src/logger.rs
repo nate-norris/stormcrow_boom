@@ -1,14 +1,14 @@
 // logger.rs
 use std::env;
-use std::fs;
 use std::path::PathBuf;
-use tracing::Level;
-use tracing_appender::non_blocking::{NonBlocking, WorkerGuard};
-use tracing_appender::rolling::{RollingFileAppender, Rotation};
-// use tracing_subscriber::fmt::writer::MakeWriterExt;
 use std::sync::Once;
+use std::fs;
 
-static mut LOG_GUARD: Option<WorkerGuard> = None;
+use tracing::Level;
+use tracing_appender::non_blocking::NonBlocking;
+use tracing_appender::rolling::{RollingFileAppender, Rotation};
+use tracing_subscriber::fmt::time::UtcTime;
+
 static INIT: Once = Once::new();
 
 pub fn init_logger() {
@@ -24,25 +24,27 @@ pub fn init_logger() {
         if !log_path.exists() {
             fs::File::create(&log_path).unwrap();
         }
-        println!("{:?}", log_path);
 
         // Use rolling appender with no rotation
         let file_appender: RollingFileAppender = RollingFileAppender::new(Rotation::NEVER, exe_dir, "log.txt");
-        let (non_blocking, guard) = NonBlocking::new(file_appender);
+        // gaurd ignored as background stays alive as long as the subscriber.
+        let (non_blocking, _guard) = NonBlocking::new(file_appender);
 
-        unsafe { LOG_GUARD = Some(guard) }
 
         tracing_subscriber::fmt()
             .with_writer(non_blocking)
+            .with_timer(UtcTime::rfc_3339())
             .with_max_level(Level::INFO)
+            .with_level(true)
+            .with_target(false)
             .init();
     });
 }
 
-// pub fn flush_logs() {
-//     unsafe {
-//         if let Some(guard) = &LOG_GUARD {
-//             guard.flush();
-//         }
-//     }
-// }
+pub fn info(message: &str) {
+    tracing::info!("{}", message);
+}
+
+pub fn error(message: &str) {
+    tracing::info!("{}", message);
+}
