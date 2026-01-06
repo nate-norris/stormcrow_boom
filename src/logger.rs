@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use tracing::Level;
 use tracing_appender::non_blocking::{NonBlocking, WorkerGuard};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
-use tracing_subscriber::fmt::writer::MakeWriterExt;
+// use tracing_subscriber::fmt::writer::MakeWriterExt;
 use std::sync::Once;
 
 static mut LOG_GUARD: Option<WorkerGuard> = None;
@@ -38,10 +38,10 @@ pub fn init_logger() {
     });
 }
 
-pub fn flush_logs() {
-    unsafe {
-        if let Some(guard) = &LOG_GUARD {
-            guard.flush();
-        }
-    }
-}
+// pub fn flush_logs() {
+//     unsafe {
+//         if let Some(guard) = &LOG_GUARD {
+//             guard.flush();
+//         }
+//     }
+// }
