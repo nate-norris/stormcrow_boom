@@ -21,13 +21,12 @@ use lib_sensor::{EventTx, SoundSensor, SoundSensorMock, SoundSensorT};
 use lib_sensor_consumer::{EventRx, sensor_consume_task};
 use lib_mic::{MicTx, MicRx, MicNotification, mic_consume_task};
 use mm2t::MM2TBoomHandle;
-// use tracing::{info, error};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // initiate logging
     logger::init_logger();
-
+    logger::info("Boom started");
     // sound sensor channels for EdgeDetection events
     let (tx, rx): (EventTx, EventRx) 
         = mpsc::channel(32);
@@ -46,6 +45,7 @@ async fn main() -> anyhow::Result<()> {
             tokio::spawn(async move {
                 let _ = mic_tx_init_radio.send(MicNotification::RadioError).await;
             });
+            logger::error("Failed to init mm2t");
             None
         }
     };
