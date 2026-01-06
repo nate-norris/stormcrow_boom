@@ -9,3 +9,4 @@ fastrand = "2.3.0"
 tokio = { version = "1.48.0", features = ["full"] }
 tokio-serial = "5.4.5"
 tracing = "0.1.44"
+tracing-appender = "0.2.4"
