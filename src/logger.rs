@@ -44,6 +44,7 @@ pub fn init_logger() {
             .with_max_level(Level::INFO)
             .with_level(true)
             .with_target(false)
+            .with_ansi(false) // no color code
             .init();
     });
 }
