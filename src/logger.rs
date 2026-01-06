@@ -30,11 +30,16 @@ pub fn init_logger() {
         // Use rolling appender with no rotation
         let file_appender: RollingFileAppender = RollingFileAppender::new(Rotation::NEVER, exe_dir, "log.txt");
         // gaurd ignored as background stays alive as long as the subscriber.
-        let (non_blocking, _guard) = NonBlocking::new(file_appender);
+        let (_non_blocking, _guard) = NonBlocking::new(file_appender);
 
 
         tracing_subscriber::fmt()
-            .with_writer(non_blocking)
+            .with_writer(std::fs::OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(log_path.clone())
+                .unwrap())
+            // .with_writer(non_blocking)
             .with_timer(UtcTime::rfc_3339())
             .with_max_level(Level::INFO)
             .with_level(true)
