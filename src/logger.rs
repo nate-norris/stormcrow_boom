@@ -6,11 +6,12 @@ use std::fs;
 use std::fs::OpenOptions;
 
 use tracing::Level;
-use tracing_appender::non_blocking::NonBlocking;
+use tracing_appender::non_blocking::{NonBlocking, WorkerGuard};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::fmt::time::UtcTime;
 
 static INIT: Once = Once::new();
+static mut LOG_GUARD: Option<WorkerGuard> = None;
 
 #[allow(dead_code)]
 pub fn init_logger_old() {
@@ -75,7 +76,8 @@ pub fn init_logger() {
             .open(log_path)
             .unwrap();
 
-        let (nb, _g) = NonBlocking::new(file);
+        let (nb, g) = NonBlocking::new(file);
+        unsafe { LOG_GUARD = Some(g); }
 
         tracing_subscriber::fmt()
             .with_writer(nb)
