@@ -16,7 +16,6 @@ impl MicrophoneT for MicrophoneMock {
     /// # Returns
     /// - `Ok(Self)`
     fn new() -> anyhow::Result<Self> {
-        println!("mic: new");
         Ok(Self {})
     }
 
@@ -31,7 +30,7 @@ impl MicrophoneT for MicrophoneMock {
     /// - `Ok(())``
     #[allow(dead_code)]
     async fn boom_pattern(&self) -> anyhow::Result<()> {
-        println!("mic: boom pattern");
+        println!("mic mock: boom pattern");
         Ok(())
     }
 
@@ -50,7 +49,7 @@ impl MicrophoneT for MicrophoneMock {
         ERROR_START.call_once(|| {
             tokio::spawn(async move {
                 loop {
-                    println!("mic: error pattern output");
+                    println!("mic mock: error pattern output");
                     sleep(std::time::Duration::from_secs(1)).await;
                 }
             });
