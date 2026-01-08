@@ -4,6 +4,7 @@ use tokio::time::{sleep, Duration, Sleep};
 
 use super::models::EventRx;
 use crate::lib_sensor::EdgeDetection;
+use crate::logger;
 
 /// Asynchronous sound sensor consumer task.
 ///
@@ -61,7 +62,7 @@ pub async fn sensor_consume_task<F, Fut>(mut rx: EventRx, mut on_trigger: F)
                 match event {
                     // assign the timer future on heap
                     EdgeDetection::Triggered => {
-                        println!("trigger received");
+                        logger::info("trigger received");
                         timer = Some(Box::pin(sleep(wait)));
                     }
                     // log any errors
