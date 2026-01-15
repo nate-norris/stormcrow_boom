@@ -7,6 +7,7 @@ use tokio::time::sleep;
 
 use super::trait_mic::MicrophoneT;
 use super::models::ERROR_START;
+use crate::logger;
 
 /// A real microphone implementation using a serial port.
 ///
@@ -82,7 +83,7 @@ impl MicrophoneT for Microphone {
                     // send bytes for beep command
                     //      if error occurs simply log
                     if let Err(e) = p.write_all(b"1").await {
-                        eprintln!("failed {:?}", e);
+                        logger::error("Microphone serial error, failed on spawn_error_pattern", Some(e));
                     }
                     drop(p); // release lock before sleeping
                     sleep(std::time::Duration::from_secs(1)).await;
