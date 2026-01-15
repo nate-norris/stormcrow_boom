@@ -77,11 +77,29 @@ pub fn init_logger() {
 }
 
 /// Writes information logs
-pub fn info(message: &str) {
+/// Arguments must implement ['std::fmt:;Display']
+/// 
+/// # Arguments
+/// * `message` — The information to log
+pub fn info(message: impl std::fmt::Display) {
     tracing::info!("{}", message);
 }
 
 /// Writes error logs
-pub fn error(message: &str) {
-    tracing::error!("{}", message);
+/// Arguments must implement ['std::fmt:;Display']
+/// 
+/// # Arguments
+/// `message` - the primary error text
+/// `extra` - an additional value to append to log
+/// 
+/// # Examples
+/// ```
+/// logger::error("sensor failure", None);
+/// logger::error("sensor failure:", Some(err));
+/// ```
+pub fn error(message: impl std::fmt::Display, extra: Option<impl std::fmt::Display>) {
+    match extra {
+        Some(e) => tracing::error!("{} {}", message, e),
+        None => tracing::error!("{}", message),
+    }
 }
