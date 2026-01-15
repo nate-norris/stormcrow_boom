@@ -28,7 +28,7 @@ impl SoundSensorT for SoundSensor {
     /// 2. Sends EdgeDetection::Triggered upon receiving a proper response
     /// 3. Sends EdgeDetection::Error on failures and returns
     fn detect_edge_task(&self, tx: EventTx) -> 
-    Pin<Box<dyn Future<Output = anyhow::Result<()>> + Send>>  {
+        Pin<Box<dyn Future<Output = anyhow::Result<()>> + Send>>  {
         Box::pin(async move {
             /* TODO determine buad rate
             9600 (classic for many modules) x
