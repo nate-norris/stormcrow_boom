@@ -1,7 +1,9 @@
 //! Boom Detection Application Entry Point
 //!
 //! This binary initializes the sound sensor, microphone notification handler,
-//! and the MM2T radio interface. Tasks are spawned for:
+//! and the MM2T radio interface. 
+//! 
+//! Tasks are spawned for:
 //! - reading sound sensor edges,
 //! - processing sensor events,
 //! - sending radio trigger packets,
@@ -27,26 +29,30 @@ async fn main() -> anyhow::Result<()> {
     // initiate logging
     logger::init_logger();
     logger::info("Boom started");
+
     // sound sensor channels for EdgeDetection events
     let (tx, rx): (EventTx, EventRx) 
         = mpsc::channel(32);
     
     // mic for MicNotifications to listen for MicTx
     // NOTE initialize before any tx can transmit
-    let mic_tx: mpsc::Sender<MicNotification> = init_mic();
+    let mic_tx: MicTx = init_mic();
 
     // serial radio packets
     //  NOTE: failed init here is a failed program and will 
     //  notify through MicNotification
     let radio = match init_radio(&mic_tx).await {
         Ok(r) => Some(r),
-        Err(_e) => {
+        Err(e) => {
+            // log the failure
+            logger::error("Failed to init mm2t radio", Some(e));
+
+            // spawn radio error mic notification
             let mic_tx_init_radio = mic_tx.clone();
             tokio::spawn(async move {
                 let _ = mic_tx_init_radio.send(MicNotification::RadioError).await;
             });
-            logger::error("Failed to init mm2t");
-            None
+            None // assign None
         }
     };
 
@@ -92,7 +98,6 @@ async fn init_radio(mic_tx: &MicTx) ->anyhow::Result< Arc<MM2TBoomHandle>> {
     match MM2TBoomHandle::start().await {
         Ok(r) => Ok(Arc::new(r)), // assign to radio
         Err(e) => {
-            logger::error("mm2t init");
             let _ = mic_tx.send(MicNotification::RadioError).await;
             Err(e.into())
         }
@@ -109,8 +114,12 @@ fn spawn_edge_detector(tx: EventTx, mic_tx: MicTx) {
     tokio::spawn(async move {
         // await sound sensor edge detect
         //      handle sound sensor error if occurs
-        if let Err(_e) = sensor.detect_edge_task(tx.clone()).await {
-            logger::error("sound sensor failed init");
+        if let Err(e) = sensor.detect_edge_task(tx.clone()).await {
+            logger::error(
+                "Failed sound sensor edge detect 
+                initialization", 
+                Some(e)
+            );
             let _ = mic_tx.send(MicNotification::SoundSensorError).await;
         }
     });
@@ -129,8 +138,8 @@ fn spawn_sensor_consumer(rx: EventRx, radio: Arc<MM2TBoomHandle>, mic_tx: MicTx)
                 let _ = mic_tx.send(MicNotification::Boom).await;
 
                 // Send radio packet and handle errors
-                if let Err(_e) = radio.send_trigger_packet().await {
-                    logger::error("failed on trigger packet send");
+                if let Err(e) = radio.send_trigger_packet().await {
+                    logger::error("Failed to send trigger packet", Some(e));
                     let _ = mic_tx.send(MicNotification::RadioError).await;
                 }
             }
