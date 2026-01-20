@@ -27,7 +27,7 @@ use mm2t::MM2TBoomHandle;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // initiate logging
-    logger::init_logger();
+    logger::init_logger(None);
     logger::info("Boom started");
 
     // sound sensor channels for EdgeDetection events
