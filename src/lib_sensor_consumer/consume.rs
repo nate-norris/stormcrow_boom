@@ -62,7 +62,6 @@ pub async fn sensor_consume_task<F, Fut>(mut rx: EventRx, mut on_trigger: F)
                 match event {
                     // assign the timer future on heap
                     EdgeDetection::Triggered => {
-                        logger::info("Trigger sensor consumer received");
                         timer = Some(Box::pin(sleep(wait)));
                     }
                     // log any errors
@@ -84,6 +83,7 @@ pub async fn sensor_consume_task<F, Fut>(mut rx: EventRx, mut on_trigger: F)
                 }
             } => {
                 // after completion drop timer and execute on_trigger
+                logger::info("Trigger sensor consumed.");
                 on_trigger().await;
                 timer = None;
             }
