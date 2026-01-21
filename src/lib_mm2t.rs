@@ -8,8 +8,8 @@
 //! - [`MM2TTransport`]: a real hardware implementation using a serial port.
 
 pub mod mm2t;
-pub mod mm2t_packet;
+pub mod packet;
 
 // re-export commmon types and functions
 pub use mm2t::MM2TTransport;
-pub use mm2t_packet::PacketT;
+pub use packet::PacketT;
