@@ -17,16 +17,14 @@ use std::sync::Arc;
 mod lib_sensor;
 mod lib_sensor_consumer;
 mod lib_mic;
-mod mm2t;
-mod mm2t_packet;
+mod lib_mm2t;
 mod packet_boom;
 mod logger;
 use lib_sensor::{EventTx, SoundSensor, SoundSensorMock, SoundSensorT};
 use lib_sensor_consumer::{EventRx, sensor_consume_task};
 use lib_mic::{MicTx, MicRx, MicNotification, mic_consume_task};
-use mm2t::MM2TTransport;
 use packet_boom::BoomPacket;
-use crate::mm2t_packet::Packet;
+use lib_mm2t::{MM2TTransport, PacketT};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
