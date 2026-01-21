@@ -13,3 +13,6 @@ pub mod packet;
 // re-export commmon types and functions
 pub use mm2t::MM2TTransport;
 pub use packet::PacketT;
+
+mod checksum;
+pub(crate) use checksum::checksum;
