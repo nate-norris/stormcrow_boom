@@ -53,9 +53,9 @@ impl MM2TBoomHandle {
     ];
 
     /// opens a serial connection to the MM2T device
-    pub async fn start() -> anyhow::Result<Self> {
+    pub async fn start(port_name: &str) -> anyhow::Result<Self> {
         //define parameters for opening serial port
-        let port_builder = tokio_serial::new("/dev/ttyUSB0", 38_400)
+        let port_builder = tokio_serial::new(port_name, 38_400)
             .data_bits(DataBits::Eight)
             .parity(Parity::None)
             .stop_bits(StopBits::One)

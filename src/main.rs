@@ -95,7 +95,7 @@ fn init_mic() -> MicTx {
 async fn init_radio(mic_tx: &MicTx) ->anyhow::Result< Arc<MM2TBoomHandle>> {
     // initialize mm2t radio
     //      sends mic notification error if failed to start
-    match MM2TBoomHandle::start().await {
+    match MM2TBoomHandle::start("/dev/ttyUSB0").await {
         Ok(r) => Ok(Arc::new(r)), // assign to radio
         Err(e) => {
             let _ = mic_tx.send(MicNotification::RadioError).await;
