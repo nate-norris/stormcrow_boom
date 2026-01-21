@@ -18,11 +18,15 @@ mod lib_sensor;
 mod lib_sensor_consumer;
 mod lib_mic;
 mod mm2t;
+mod mm2t_packet;
+mod packet_boom;
 mod logger;
 use lib_sensor::{EventTx, SoundSensor, SoundSensorMock, SoundSensorT};
 use lib_sensor_consumer::{EventRx, sensor_consume_task};
 use lib_mic::{MicTx, MicRx, MicNotification, mic_consume_task};
-use mm2t::MM2TBoomHandle;
+use mm2t::MM2TTransport;
+use packet_boom::BoomPacket;
+use crate::mm2t_packet::Packet;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -41,7 +45,7 @@ async fn main() -> anyhow::Result<()> {
     // serial radio packets
     //  NOTE: failed init here is a failed program and will 
     //  notify through MicNotification
-    let radio = match init_radio(&mic_tx).await {
+    let mm2t = match init_mm2t(&mic_tx).await {
         Ok(r) => Some(r),
         Err(e) => {
             // log the failure
@@ -59,14 +63,14 @@ async fn main() -> anyhow::Result<()> {
     // consume rx of sound sensor edge detection
     //      sends radio packet
     //      handles MicNotifications for errors and triggers
-    if let Some(r) = radio {
+    if let Some(m) = mm2t {
         // initiate EventTx for sound sensor
         spawn_edge_detector(tx.clone(), mic_tx.clone());
 
         // initiate listening for EventRx for sound sensor
         //      sends radio packet
         //      handles MicNotifications
-        spawn_sensor_consumer(rx, r, mic_tx.clone());
+        spawn_sensor_consumer(rx, m, mic_tx.clone());
     }
 
     // await Ctrl+C from user to end program
@@ -92,10 +96,10 @@ fn init_mic() -> MicTx {
 
 // Initializes MM2T radio
 // On failure begins a MicNotification::RadioError
-async fn init_radio(mic_tx: &MicTx) ->anyhow::Result< Arc<MM2TBoomHandle>> {
+async fn init_mm2t(mic_tx: &MicTx) -> anyhow::Result< Arc<MM2TTransport>> {
     // initialize mm2t radio
     //      sends mic notification error if failed to start
-    match MM2TBoomHandle::start("/dev/ttyUSB0").await {
+    match MM2TTransport::start("/dev/ttyUSB0").await {
         Ok(r) => Ok(Arc::new(r)), // assign to radio
         Err(e) => {
             let _ = mic_tx.send(MicNotification::RadioError).await;
@@ -127,18 +131,20 @@ fn spawn_edge_detector(tx: EventTx, mic_tx: MicTx) {
 
 // spawn background task that consumes EventRx events
 // Sends mic notifications and radio packets
-fn spawn_sensor_consumer(rx: EventRx, radio: Arc<MM2TBoomHandle>, mic_tx: MicTx) {
+fn spawn_sensor_consumer(rx: EventRx, radio: Arc<MM2TTransport>, mic_tx: MicTx) {
     // Spawn background task for consuming sensor events
     tokio::spawn(async move {
         sensor_consume_task(rx, move || {
             let mic_tx = mic_tx.clone();       // clone per callback invocation
-            let radio: Arc<MM2TBoomHandle> = Arc::clone(&radio);    // clone Arc per callback invocation
+            let radio: Arc<MM2TTransport> = Arc::clone(&radio);    // clone Arc per callback invocation
             async move {
                 // Notify mic of shot success
                 let _ = mic_tx.send(MicNotification::Boom).await;
+                
 
                 // Send radio packet and handle errors
-                if let Err(e) = radio.send_trigger_packet().await {
+                let packet = BoomPacket;
+                if let Err(e) = radio.send(&packet.to_bytes()).await {
                     logger::error("Failed to send trigger packet", Some(e));
                     let _ = mic_tx.send(MicNotification::RadioError).await;
                 }
