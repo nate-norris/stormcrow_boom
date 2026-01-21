@@ -1,4 +1,4 @@
-pub trait Packet {
+pub trait PacketT {
     const SOP: u8 = 0xAA; // start of packet
 
     fn packet_type(&self) -> u8;
@@ -7,12 +7,10 @@ pub trait Packet {
 
     fn checksum(&self) -> u8 {
         let mut checksum = self.packet_type() ^ self.payload().len() as u8;
-
-        let mut i = 0;
-        while i < self.payload().len() {
-            checksum ^= self.payload()[i];
-            i += 1;
+        for &b in self.payload() {
+            checksum ^= b;
         }
+
         checksum
     }
 
