@@ -1,8 +1,8 @@
-use crate::mm2t_packet::Packet;
+use crate::lib_mm2t::PacketT;
 
 pub struct BoomPacket;
 
-impl Packet for BoomPacket {
+impl PacketT for BoomPacket {
     fn packet_type(&self) -> u8 {
         0x42 // character 'B' .. as in Boom
     }
