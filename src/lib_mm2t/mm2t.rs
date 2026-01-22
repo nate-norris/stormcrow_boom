@@ -1,5 +1,5 @@
 
-use tokio::sync::Mutex;
+use tokio::{io::AsyncReadExt, sync::Mutex};
 use tokio_serial::{SerialStream, SerialPortBuilderExt, DataBits, Parity, 
     StopBits, FlowControl}; //SerialStream
 use tokio::io::AsyncWriteExt;
@@ -57,5 +57,12 @@ impl MM2TTransport {
         port.flush().await?;
 
         Ok(())
+    }
+
+    pub async fn read(&self) -> anyhow::Result<u8> {
+        let mut port = self.port.lock().await;
+        let mut buf = [0u8; 1];
+        port.read_exact(&mut buf).await?;
+        Ok(buf[0])
     }
 }
