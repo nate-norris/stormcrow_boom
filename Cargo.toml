@@ -10,3 +10,4 @@ log = "0.4.29"
 simplelog = "0.12.2"
 tokio = { version = "1.48.0", features = ["full"] }
 tokio-serial = "5.4.5"
+mm2t = { git = "git@bitbucket.org:norris14597mil/stormcrow_mm2t.git", tag = "v0.1.0", features = ["mm2t-tx"] }
