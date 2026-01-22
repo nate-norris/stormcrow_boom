@@ -1,6 +1,6 @@
 //! # lib_mm2t
 //!
-//! `lib_mm2t` provides an abstraction layer for interacting with the 900 MHz
+//! Provides an abstraction layer for interacting with the 900 MHz
 //! serial radio in a Tokio async contexts.
 //!
 //! This library exposes:
@@ -9,10 +9,9 @@
 
 pub mod mm2t;
 pub mod packet;
+pub(crate) mod checksum;
+pub(crate) mod packet_decoder;
 
 // re-export commmon types and functions
 pub use mm2t::MM2TTransport;
 pub use packet::PacketT;
-
-mod checksum;
-pub(crate) use checksum::checksum;
