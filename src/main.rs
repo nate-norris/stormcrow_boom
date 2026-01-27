@@ -93,7 +93,7 @@ fn init_mic() -> MicTx {
 
 // Initializes MM2T radio
 // On failure begins a MicNotification::RadioError
-async fn init_mm2t(mic_tx: &MicTx) -> anyhow::Result< Arc<MM2TTransport>> {
+async fn init_mm2t(mic_tx: &MicTx) -> anyhow::Result<Arc<MM2TTransport>> {
     // initialize mm2t radio
     //      sends mic notification error if failed to start
     match MM2TTransport::start("/dev/ttyUSB0").await {
