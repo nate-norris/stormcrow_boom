@@ -47,7 +47,7 @@ async fn main() -> anyhow::Result<()> {
         Ok(r) => Some(r),
         Err(e) => {
             // log the failure
-            logger::error("Failed to init mm2t radio", Some(&e));
+            logger::error("Failed to init mm2t radio", Some(e));
 
             // spawn radio error mic notification
             let mic_tx_init_radio = mic_tx.clone();
@@ -100,7 +100,7 @@ async fn init_mm2t(mic_tx: &MicTx) -> anyhow::Result<Arc<MM2TTransport>> {
     match MM2TTransport::start("/dev/ttyUSB0").await {
         Ok(r) => Ok(Arc::new(r)), // assign to radio
         Err(e) => {
-            logger::error("Failed mm2t initialization", Some(e));
+            logger::error("Failed mm2t initialization", Some(&e));
             let _ = mic_tx.send(MicNotification::RadioError).await;
             Err(e.into())
         }
