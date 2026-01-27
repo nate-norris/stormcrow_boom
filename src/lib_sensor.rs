@@ -20,18 +20,18 @@
 //!
 //! ```no_run
 //! use tokio::sync::mpsc;
-//! use lib_mic::{mic_consume_task, MicNotification};
+//! use utils::{speaker_consume_task, SpeakerNotification};
 //!
 //! #[tokio::main]
 //! async fn main() {
 //!     let (tx, rx) = mpsc::channel(32);
 //!
 //!     tokio::spawn(async move {
-//!         mic_consume_task(rx).await;
+//!         speaker_consume_task(rx).await;
 //!     });
 //!
-//!     tx.send(MicNotification::Boom).await.unwrap();
-//!     tx.send(MicNotification::SoundSensorError).await.unwrap();
+//!     tx.send(SpeakerNotification::Boom).await.unwrap();
+//!     tx.send(SpeakerNotification::SoundSensorError).await.unwrap();
 //! }
 //! ```
 
