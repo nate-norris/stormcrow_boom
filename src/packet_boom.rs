@@ -1,4 +1,4 @@
-use mm2t::PacketT;
+use utils::mm2t::PacketT;
 
 pub struct BoomPacket;
 
