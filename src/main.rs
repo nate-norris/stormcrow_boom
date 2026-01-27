@@ -1,15 +1,16 @@
 //! Boom Detection Application Entry Point
 //!
-//! This binary initializes the sound sensor, microphone notification handler,
-//! and the MM2T radio interface. 
+//! This binary initializes the sound sensor, speaker notification handler,
+//! and the MM2T interface. 
 //! 
 //! Tasks are spawned for:
 //! - reading sound sensor edges,
 //! - processing sensor events,
-//! - sending radio trigger packets,
-//! - notifying a microphone device of system events.
+//! - sending mm2t trigger packets,
+//! - notifying a speaker device of system events.
 //!
-//! The application runs until the user presses Ctrl+C.
+//! The application is meant to ran in headless mode on the host power-up but 
+//! can be ran manually and resolved when the user presses Ctrl+C.
 
 use tokio::sync::mpsc;
 use std::sync::Arc;
@@ -99,6 +100,7 @@ async fn init_mm2t(mic_tx: &MicTx) -> anyhow::Result<Arc<MM2TTransport>> {
     match MM2TTransport::start("/dev/ttyUSB0").await {
         Ok(r) => Ok(Arc::new(r)), // assign to radio
         Err(e) => {
+            logger::error("Failed mm2t initialization", Some(e));
             let _ = mic_tx.send(MicNotification::RadioError).await;
             Err(e.into())
         }
