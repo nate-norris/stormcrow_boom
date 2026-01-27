@@ -47,7 +47,7 @@ async fn main() -> anyhow::Result<()> {
         Ok(r) => Some(r),
         Err(e) => {
             // log the failure
-            logger::error("Failed to init mm2t radio", Some(e));
+            logger::error("Failed to init mm2t radio", Some(&e));
 
             // spawn radio error mic notification
             let mic_tx_init_radio = mic_tx.clone();
