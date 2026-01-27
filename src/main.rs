@@ -19,12 +19,12 @@ mod lib_sensor;
 mod lib_sensor_consumer;
 mod lib_mic;
 mod packet_boom;
-mod logger;
 use lib_sensor::{EventTx, SoundSensor, SoundSensorMock, SoundSensorT};
 use lib_sensor_consumer::{EventRx, sensor_consume_task};
 use lib_mic::{MicTx, MicRx, MicNotification, mic_consume_task};
 use packet_boom::BoomPacket;
 use utils::mm2t::{MM2TTransport, PacketT};
+use utils::logger;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
