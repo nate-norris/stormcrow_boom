@@ -43,20 +43,7 @@ async fn main() -> anyhow::Result<()> {
     // serial radio packets
     //  NOTE: failed init here is a failed program and will 
     //  notify through SpeakerNotification
-    let mm2t = match init_mm2t(&speaker_tx).await {
-        Ok(r) => Some(r),
-        Err(e) => {
-            // log the failure
-            logger::error("Failed to init mm2t radio", Some(e));
-
-            // spawn radio error speaker notification
-            let speaker_tx_init_radio = speaker_tx.clone();
-            tokio::spawn(async move {
-                let _ = speaker_tx_init_radio.send(SpeakerNotification::RadioError).await;
-            });
-            None // assign None
-        }
-    };
+    let mm2t: Option<Arc<MM2TTransport>> = init_mm2t.await(&speaker_tx).ok();
 
     // consume rx of sound sensor edge detection
     //      sends radio packet
@@ -94,15 +81,13 @@ fn init_speaker() -> SpeakerTx {
 
 // Initializes MM2T radio
 // On failure begins a SpeakerNotification::RadioError
-async fn init_mm2t(speaker_tx: &SpeakerTx) -> anyhow::Result<Arc<MM2TTransport>> {
-    // initialize mm2t radio
-    //      sends speaker notification error if failed to start
+async fn init_mm2t(speaker_tx: &SpeakerTx) -> Option<Arc<MM2TTransport>> {
     match MM2TTransport::start("/dev/ttyUSB0").await {
-        Ok(r) => Ok(Arc::new(r)), // assign to radio
+        Ok(r) => Some(Arc::new(r)),
         Err(e) => {
-            logger::error("Failed mm2t initialization", Some(&e));
+            logger::error("Failed mm2t init", Some(&e));
             let _ = speaker_tx.send(SpeakerNotification::RadioError).await;
-            Err(e.into())
+            None
         }
     }
 }
