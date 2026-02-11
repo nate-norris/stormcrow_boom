@@ -43,7 +43,7 @@ async fn main() -> anyhow::Result<()> {
     // serial radio packets
     //  NOTE: failed init here is a failed program and will 
     //  notify through SpeakerNotification
-    let mm2t: Option<Arc<MM2TTransport>> = init_mm2t.await(&speaker_tx).ok();
+    let mm2t: Option<Arc<MM2TTransport>> = init_mm2t(&speaker_tx).await;
 
     // consume rx of sound sensor edge detection
     //      sends radio packet
@@ -102,7 +102,7 @@ fn spawn_edge_detector(tx: EventTx, speaker_tx: SpeakerTx) {
     tokio::spawn(async move {
         // await sound sensor edge detect
         //      handle sound sensor error if occurs
-        if let Err(e) = sensor.detect_edge_task(tx.clone()).await {
+        if let Err(e) = sensor.detect_edge_task(tx).await {
             logger::error(
                 "Failed sound sensor edge detect 
                 initialization", 
