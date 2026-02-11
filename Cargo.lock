@@ -443,6 +443,17 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "fastrand",
+ "stormcrow_utils",
+ "tokio",
+ "tokio-serial",
+]
+
+[[package]]
+name = "stormcrow_utils"
+version = "0.1.9"
+source = "git+ssh://git@bitbucket.org/norris14597mil/stormcrow_utils.git?tag=v0.1.9#ec81349ef49ad5d4aa63ea8d98b605098d9de398"
+dependencies = [
+ "anyhow",
  "log",
  "simplelog",
  "tokio",
@@ -524,9 +535,9 @@ dependencies = [
 
 [[package]]
 name = "tokio"
-version = "1.48.0"
+version = "1.49.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff360e02eab121e0bc37a2d3b4d4dc622e6eda3a8e5253d5435ecf5bd4c68408"
+checksum = "72a2903cd7736441aac9df9d7688bd0ce48edccaadf181c3b90be801e81d3d86"
 dependencies = [
  "bytes",
  "libc",
