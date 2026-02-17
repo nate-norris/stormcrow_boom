@@ -66,7 +66,7 @@ pub async fn sensor_consume_task<F, Fut>(mut rx: EventRx, mut on_trigger: F)
                     }
                     // log any errors
                     EdgeDetection::Error(msg) => {
-                        logger::error("Trigger sensor error", Some(msg));
+                        logger::error_with("Trigger sensor error", msg);
                     }
                 }
             }

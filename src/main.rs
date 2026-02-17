@@ -85,7 +85,7 @@ async fn init_mm2t(speaker_tx: &SpeakerTx) -> Option<Arc<MM2TTransport>> {
     match MM2TTransport::start("/dev/ttyUSB0").await {
         Ok(r) => Some(Arc::new(r)),
         Err(e) => {
-            logger::error("Failed mm2t init", Some(&e));
+            logger::error_with("Failed mm2t init", e);
             let _ = speaker_tx.send(SpeakerNotification::RadioError).await;
             None
         }
@@ -103,11 +103,8 @@ fn spawn_edge_detector(tx: EventTx, speaker_tx: SpeakerTx) {
         // await sound sensor edge detect
         //      handle sound sensor error if occurs
         if let Err(e) = sensor.detect_edge_task(tx).await {
-            logger::error(
-                "Failed sound sensor edge detect 
-                initialization", 
-                Some(e)
-            );
+            logger::error_with(
+                "Failed sound sensor edge detect init", e);
             let _ = speaker_tx.send(SpeakerNotification::SoundSensorError).await;
         }
     });
@@ -124,12 +121,13 @@ fn spawn_sensor_consumer(rx: EventRx, radio: Arc<MM2TTransport>, speaker_tx: Spe
             async move {
                 // Notify speaker of shot success
                 let _ = speaker_tx.send(SpeakerNotification::Boom).await;
+                // TODO only make notification if mm2t has sent the packet
                 
 
                 // Send radio packet and handle errors
                 let packet = BoomPacket;
                 if let Err(e) = radio.send(&packet.to_bytes()).await {
-                    logger::error("Failed to send trigger packet", Some(e));
+                    logger::error_with("Failed to send trigger pacaket", e);
                     let _ = speaker_tx.send(SpeakerNotification::RadioError).await;
                 }
             }
