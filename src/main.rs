@@ -130,8 +130,9 @@ fn spawn_sensor_consumer(rx: EventRx, radio: Arc<MM2TTransport>, speaker_tx: Spe
 
                 // Send radio packet and handle errors
                 let packet = BoomPacket::new(current_count);
-                println!("sending boom on_trigger: {}", current_count);
+                println!("{:?} {:?}", packet.packet_type(), packet.payload());
                 if let Err(e) = radio.send(&packet.to_bytes()).await {
+                    println!("FAILED SEND PACKET");
                     logger::error_with("Failed to send trigger pacaket", e);
                     let _ = speaker_tx.send(SpeakerNotification::RadioError).await;
                 }
