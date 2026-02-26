@@ -14,7 +14,6 @@
 
 use tokio::sync::mpsc;
 use std::sync::Arc;
-use std::thread::current;
 
 mod lib_sensor;
 mod lib_sensor_consumer;
