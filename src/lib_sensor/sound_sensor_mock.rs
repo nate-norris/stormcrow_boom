@@ -45,7 +45,7 @@ impl SoundSensorT for SoundSensorMock {
                 }
                 
                 // waiting period until next trigger occurs
-                let wait = Duration::from_secs(fastrand::u64(10..=60));
+                let wait = Duration::from_secs(fastrand::u64(5..=10));
                 println!("Next fake trigger in: {:?} sec", wait);
                 sleep(wait).await;
             }
