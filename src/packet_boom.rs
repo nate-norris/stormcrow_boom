@@ -1,6 +1,14 @@
 use utils::mm2t::PacketT;
 
-pub struct BoomPacket;
+pub struct BoomPacket {
+    count: u8,
+}
+
+impl BoomPacket {
+    pub fn new(count: u8) -> Self {
+        Self { count }
+    }
+}
 
 impl PacketT for BoomPacket {
     fn packet_type(&self) -> u8 {
@@ -8,7 +16,6 @@ impl PacketT for BoomPacket {
     }
 
     fn payload(&self) -> &[u8] {
-        static PAYLOAD: [u8; 1] = [0x01];
-        &PAYLOAD
+        std::slice::from_ref(&self.count)
     }
 }

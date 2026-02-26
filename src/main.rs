@@ -14,6 +14,7 @@
 
 use tokio::sync::mpsc;
 use std::sync::Arc;
+use std::thread::current;
 
 mod lib_sensor;
 mod lib_sensor_consumer;
@@ -113,19 +114,24 @@ fn spawn_edge_detector(tx: EventTx, speaker_tx: SpeakerTx) {
 // spawn background task that consumes EventRx events
 // Sends speaker notifications and radio packets
 fn spawn_sensor_consumer(rx: EventRx, radio: Arc<MM2TTransport>, speaker_tx: SpeakerTx) {
+
+    let mut count: u8 = 0; // simple counter for tracking boom packet alignment
     // Spawn background task for consuming sensor events
     tokio::spawn(async move {
         sensor_consume_task(rx, move || {
             let speaker_tx = speaker_tx.clone();       // clone per callback invocation
             let radio: Arc<MM2TTransport> = Arc::clone(&radio);    // clone Arc per callback invocation
+            
+            count = count.wrapping_add(1);
+            let current_count = count;
             async move {
                 // Notify speaker of shot success
-                let _ = speaker_tx.send(SpeakerNotification::Boom).await;
                 // TODO only make notification if mm2t has sent the packet
-                
+                let _ = speaker_tx.send(SpeakerNotification::Boom).await;
 
                 // Send radio packet and handle errors
-                let packet = BoomPacket;
+                let packet = BoomPacket::new(current_count);
+                println!("sending boom on_trigger: {}", current_count);
                 if let Err(e) = radio.send(&packet.to_bytes()).await {
                     logger::error_with("Failed to send trigger pacaket", e);
                     let _ = speaker_tx.send(SpeakerNotification::RadioError).await;
