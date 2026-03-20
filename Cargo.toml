@@ -9,7 +9,7 @@ fastrand = "2.3.0"
 tokio = { version = "1", features = ["full"] }
 tokio-serial = "5.4.5"
 [dependencies.utils]
-git = "ssh://git@bitbucket.org/norris14597mil/stormcrow_utils.git"
+git = "ssh://git@github.com/nate-norris/stormcrow_utils.git"
 package = "stormcrow_utils"
-tag = "v0.1.23"
+tag = "v0.1.24"
 features = ["mm2t-tx"]
