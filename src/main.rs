@@ -95,8 +95,8 @@ async fn init_mm2t(speaker_tx: &SpeakerTx) -> Option<Arc<MM2TTransport>> {
 // Spawn background task reading sound sensor edges
 fn spawn_edge_detector(tx: EventTx, speaker_tx: SpeakerTx) {
     // sensor for sound trigger
-    let sensor = SoundSensorMock;
-    let _sensor = SoundSensor;
+    let _sensor = SoundSensorMock;
+    let sensor = SoundSensor;
 
     // spawn sound sensor thread for triggering edge detects
     tokio::spawn(async move {

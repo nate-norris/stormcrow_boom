@@ -30,19 +30,9 @@ impl SoundSensorT for SoundSensor {
     fn detect_edge_task(&self, tx: EventTx) -> 
         Pin<Box<dyn Future<Output = anyhow::Result<()>> + Send>>  {
         Box::pin(async move {
-            /* TODO determine buad rate
-            9600 (classic for many modules) x
-            19200
-            38400
-            57600
-            115200 (very common for high-speed microcontrollers) x
-            230400
-            460800
-            921600 (rare, mostly for high-throughput devices)
-            */
             // open the port
             let mut port = tokio_serial::new("/dev/ttyUSB1", 
-                115_200).open_native_async()?;
+                9_600).open_native_async()?;
             let mut buf = [0u8; 1]; // read one byte
 
             loop {
